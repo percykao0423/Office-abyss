@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>異度家庭日 - The Office Abyss (V30 語法零錯誤終極版)</title>
+<style>
+  :root {
+    --bg-color: #0b0d14;
+    --panel-bg: #141824;
+    --accent: #ff4757;
+    --text: #e0e6ed;
+    --border: #262e40;
+    --highlight: #2ed573;
+    --gold: #ffa502;
+    --player-theme: #ffa502;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
+  body {
+    background-color: var(--bg-color);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Microsoft JhengHei", sans-serif;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+  }
+  header {
+    background: #121520;
+    padding: 6px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    height: 34px;
+  }
+  .header-title { font-weight: bold; font-size: 0.88rem; color: #ffa502; display: flex; align-items: center; gap: 6px; }
+  .turn-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #1a2030;
+    border-bottom: 2px solid var(--player-theme);
+    padding: 2px 10px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    flex-shrink: 0;
+    height: 28px;
+  }
+  .player-tab-list { display: flex; gap: 4px; overflow-x: auto; white-space: nowrap; }
+  .player-tab {
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 0.68rem;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid transparent;
+    color: #a0aec0;
+  }
+  .player-tab.active-tab {
+    border-color: var(--player-theme);
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    font-weight: bold;
+  }
+  .game-layout {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+  }
+  .center-canvas-wrapper {
+    flex: 1;
+    min-height: 220px;
+    max-height: 50vh;
+    max-height: 50dvh;
+    position: relative;
+    background: #06070a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    padding: 2px;
+  }
+  canvas#gameCanvas {
+    background: #0f121d;
+    box-shadow: 0 0 15px rgba(0,0,0,0.85);
+    border: 1px solid var(--border);
+    max-height: 98%;
+    max-width: 98%;
+    aspect-ratio: 1 / 1;
+    border-radius: 6px;
+  }
+  .bottom-dashboard {
+    height: 46vh;
+    height: 46dvh;
+    background: var(--panel-bg);
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: row;
+    padding: 5px;
+    gap: 5px;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+  .dash-left-box {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px;
+    overflow: hidden;
+  }
+  .char-compact-row { display: flex; align-items: center; gap: 5px; }
+  canvas#active-char-canvas { background: rgba(0,0,0,0.3); border-radius: 4px; border: 1px solid #3c445c; flex-shrink: 0; }
+  .char-summary { flex: 1; min-width: 0; }
+  .char-name-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.76rem; font-weight: bold; }
+  .hp-bar-container { background: #232733; border-radius: 3px; overflow: hidden; height: 7px; margin-top: 2px; border: 1px solid #3c445c; }
+  .hp-bar-fill { height: 100%; background: linear-gradient(90deg, #e74c3c, #2ed573); width: 100%; transition: width 0.3s ease; }
+  .step-badge {
+    background: #10141f;
+    border: 1.5px solid #2ed573;
+    color: #2ed573;
+    padding: 3px 5px;
+    border-radius: 4px;
+    text-align: center;
+    font-weight: 900;
+    font-size: 0.78rem;
+    margin: 3px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .step-badge.no-steps { border-color: #ff4757 !important; color: #ff4757 !important; background: rgba(255, 71, 87, 0.15) !important; }
+  .stat-grid-compact { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; font-size: 0.65rem; margin-bottom: 3px; }
+  .stat-pill { background: rgba(255,255,255,0.04); padding: 2px 3px; border-radius: 3px; border: 1px solid #232a3a; }
+  .stat-val { font-weight: bold; color: #ffa502; float: right; }
+  .inline-inventory-box {
+    background: #10141f;
+    border: 1px solid #28324a;
+    border-radius: 4px;
+    max-height: 85px;
+    overflow-y: auto;
+    padding: 3px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .inline-item-card { background: #1b2233; border-radius: 3px; padding: 2px 4px; display: flex; justify-content: space-between; align-items: center; font-size: 0.65rem; }
+  .inline-item-name { color: #ffa502; font-weight: bold; cursor: pointer; text-decoration: underline; }
+  .inline-use-btn { background: #2ed573; color: #111; border: none; padding: 1px 5px; border-radius: 2px; font-weight: bold; font-size: 0.6rem; cursor: pointer; }
+  .quick-tools-row { display: flex; gap: 3px; margin-top: 2px; }
+  .quick-btn { flex: 1; background: #202738; border: 1px solid #3b4660; color: #cbd5e0; padding: 4px 2px; border-radius: 3px; font-size: 0.65rem; font-weight: bold; cursor: pointer; }
+  .dash-right-box {
+    flex: 1.1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px;
+  }
+  .boss-mini-bar {
+    display: none;
+    background: rgba(255, 71, 87, 0.15);
+    border: 1px solid #ff4757;
+    border-radius: 4px;
+    padding: 2px 4px;
+    margin-bottom: 2px;
+    font-size: 0.65rem;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .control-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; }
+  .control-grid button {
+    background: #252c3d;
+    color: white;
+    border: 1px solid #3d4a66;
+    padding: 10px 2px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.8rem;
+    touch-action: manipulation;
+  }
+  .control-grid button:active { background: #4a5a7d; transform: scale(0.96); }
+  .btn-turn { background: #d63031 !important; border-color: #ff7675 !important; width: 100%; padding: 7px 2px !important; font-size: 0.75rem !important; margin-top: 2px; }
+  .drawer-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7); z-index: 500; display: none; justify-content: center; align-items: flex-end;
+  }
+  .drawer-content { background: #181f2f; border-top: 2px solid var(--player-theme); border-radius: 12px 12px 0 0; width: 100%; max-height: 65vh; padding: 14px; overflow-y: auto; }
+  .shake-screen { animation: screenShake 0.35s ease-in-out; }
+  @keyframes screenShake {
+    0%, 100% { transform: translate(0, 0); }
+    20% { transform: translate(-6px, 4px); }
+    40% { transform: translate(6px, -4px); }
+    60% { transform: translate(-4px, -2px); }
+    80% { transform: translate(4px, 2px); }
+  }
+  .flash-red { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 0, 0, 0.35); pointer-events: none; z-index: 50; animation: fadeOut 0.4s forwards; }
+  .flash-white { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.45); pointer-events: none; z-index: 50; animation: fadeOut 0.3s forwards; }
+  @keyframes fadeOut { 0% { opacity: 1; } 100% { opacity: 0; } }
+  .modal-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.88); display: flex; justify-content: center; align-items: center; z-index: 9999;
+  }
+  .modal-box {
+    background: #1a202c; border: 2px solid #4a5568; border-radius: 10px;
+    width: 580px; max-width: 94vw; padding: 16px; text-align: center; max-height: 90vh; overflow-y: auto;
+  }
+  .char-select-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+  .char-card { background: #232a3b; padding: 8px; border-radius: 6px; cursor: pointer; border: 1.5px solid #36415a; text-align: left; display: flex; gap: 8px; align-items: center; }
+  .char-card.disabled-char { opacity: 0.35; filter: grayscale(1); }
+  .dice-stage { display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 10px 0; }
+  .dice-box {
+    width: 70px; height: 70px; background: #ffffff; color: #111; border-radius: 12px;
+    display: flex; justify-content: center; align-items: center; font-size: 2.4rem; font-weight: 900; border: 3px solid #ff4757;
+  }
+  .dice-rolling { animation: diceRollAnim 0.12s infinite alternate; }
+  @keyframes diceRollAnim { 0% { transform: scale(1.08) rotate(-12deg); } 100% { transform: scale(0.96) rotate(12deg); } }
+  .story-narrative {
+    text-align: left; font-size: 0.84rem; line-height: 1.6; color: #e2e8f0;
+    background: rgba(0,0,0,0.35); border-left: 3px solid #ffa502; padding: 10px 12px; border-radius: 4px; margin: 10px 0; max-height: 240px; overflow-y: auto;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-title">🏢 異度家庭日 (V30 終極修復版)</div>
+  <div style="display:flex; align-items:center; gap:8px;">
+    <button id="btn-audio-toggle" onclick="toggleAudio()" style="background:#262c3d; padding:2px 8px; font-size:0.72rem; border:1px solid #4a5568; color:#fff; border-radius:3px;">🔊 音效: 開啟</button>
+    <div id="game-phase-badge" style="color: #2ed573; font-weight: bold; font-size: 0.78rem;">探索期</div>
+  </div>
+</header>
+
+<div class="turn-banner" id="turnBanner">
+  <div style="display:flex; align-items:center; gap:6px;">
+    <span>當前操作：</span>
+    <span id="current-player-title" style="color:var(--player-theme); font-weight:bold;">P1: 翔翔</span>
+  </div>
+  <div class="player-tab-list" id="playerTabList"></div>
+</div>
+
+<div class="game-layout">
+  <div class="center-canvas-wrapper" id="canvasWrapper">
+    <canvas id="gameCanvas" width="650" height="650"></canvas>
+  </div>
+
+  <div class="bottom-dashboard">
+    <div class="dash-left-box">
+      <div>
+        <div class="char-compact-row">
+          <canvas id="active-char-canvas" width="34" height="42"></canvas>
+          <div class="char-summary">
+            <div class="char-name-row">
+              <span id="p-name" style="color:var(--player-theme);">翔翔</span>
+              <span id="p-hp" style="color:#2ed573;">- / -</span>
+            </div>
+            <div class="hp-bar-container"><div class="hp-bar-fill" id="p-hp-fill"></div></div>
+          </div>
+        </div>
+
+        <div class="step-badge" id="p-step-badge">
+          <span>剩餘步數</span>
+          <span id="p-step-count" style="font-size:1.05rem;">0</span>
+        </div>
+
+        <div class="stat-grid-compact">
+          <div class="stat-pill">力氣 <span class="stat-val" id="p-str">-</span></div>
+          <div class="stat-pill">速度 <span class="stat-val" id="p-spd">-</span></div>
+          <div class="stat-pill">知識 <span class="stat-val" id="p-kno">-</span></div>
+          <div class="stat-pill">心智 <span class="stat-val" id="p-san">-</span></div>
+        </div>
+
+        <div class="inline-inventory-box" id="inlineInventoryBox">
+          <div style="font-size:0.62rem; color:#747d8c; text-align:center; padding:4px 0;">背包目前無道具</div>
+        </div>
+      </div>
+
+      <div class="quick-tools-row">
+        <button class="quick-btn" onclick="openDrawer('logs')">📜 空間動態日誌</button>
+      </div>
+    </div>
+
+    <div class="dash-right-box">
+      <div class="boss-mini-bar" id="boss-mini-bar">
+        <span>👾 <b id="b-name">Boss</b> (HP:<b id="b-hp" style="color:#ff4757;">-</b> | 力氣:<b id="b-str" style="color:#ffa502;">-</b>)</span>
+        <button onclick="performBasicAttack()" style="background:#e74c3c; border:none; color:#fff; padding:2px 6px; border-radius:3px; font-weight:bold; font-size:0.65rem; cursor:pointer;">
+          ⚔️重拳
+        </button>
+      </div>
+
+      <div id="altar-action-container" style="display:none; margin-bottom:2px;">
+        <button type="button" onclick="destroyCurrentAltar()" style="background:#8e44ad; color:#fff; border:none; width:100%; padding:4px; border-radius:3px; font-size:0.72rem; font-weight:bold; cursor:pointer;">
+          🔮 砸碎此處【深淵祭壇】！
+        </button>
+      </div>
+
+      <div class="control-grid">
+        <div></div>
+        <button onclick="tryMove(0, -1)">▲</button>
+        <div></div>
+        <button onclick="tryMove(-1, 0)">◀</button>
+        <button onclick="endTurn()" style="background:#4b5563;">停步</button>
+        <button onclick="tryMove(1, 0)">▶</button>
+        <div></div>
+        <button onclick="tryMove(0, 1)">▼</button>
+        <div></div>
+      </div>
+      <button class="btn-turn" id="btn-end-turn" onclick="endTurn()">換下一位行動 (結束)</button>
+    </div>
+  </div>
+</div>
+
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()">
+  <div class="drawer-content" onclick="event.stopPropagation()">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <h3 id="drawerTitle" style="color:#ffa502; font-size:0.95rem;">空間動態日誌</h3>
+      <button onclick="closeDrawer()" style="background:#374151; border:none; color:#fff; padding:3px 8px; border-radius:3px; font-size:0.75rem; cursor:pointer;">關閉</button>
+    </div>
+    <div id="drawerBody"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal" style="display: flex;">
+  <div class="modal-box" id="modal-content">
+    <div style="border-radius:8px; overflow:hidden; margin-bottom:10px; border:1px solid #36415a;">
+      <svg viewBox="0 0 560 160" width="100%" height="auto" style="display:block; background:#0c0f17;">
+        <rect width="560" height="160" fill="#0c0f17"/>
+        <rect x="180" y="20" width="200" height="140" fill="#141a29" stroke="#252e47" stroke-width="2"/>
+        <rect x="200" y="35" width="25" height="15" fill="#ff4757" opacity="0.85"/>
+        <rect x="250" y="35" width="25" height="15" fill="#70a1ff" opacity="0.8"/>
+        <rect x="300" y="35" width="25" height="15" fill="#ff4757" opacity="0.85"/>
+        <rect x="240" y="105" width="80" height="55" fill="#1e2840" stroke="#ffa502" stroke-width="1.5"/>
+      </svg>
+    </div>
+    <h1 style="color:#ffa502; font-size:1.25rem; margin-bottom:4px;">異度家庭日：公司異空間大冒險</h1>
+    <div class="story-narrative">
+      <b>【大樓異常封閉・生存手冊】</b><br>
+      週末清晨，你們收到了人資部的全員信前來參加【幸福家庭日】。防爆鐵捲門轟然封死，對外通訊中斷！<br><br>
+      <b>🧭 三大決戰路線指南：</b><br>
+      1. <b>路線 A（0號實驗體）</b>：速度 2 / 力量 8 巨獸！近身肉搏須通過力量檢定（D6+力氣-8）。受傷可自選扣力氣或速度。<br>
+      2. <b>路線 B（全知母體）</b>：AI 母體固定不動！造成<b>肉體傷害</b>，每回合通電多間房間並由 3 處變電箱持續派出速度 3 格的無人機！<br>
+      3. <b>路線 C（代理執行長）</b>：造成<b>心智傷害</b>！執行長超過 3 格時虛空瞬移直擊心智。地圖邊緣生成 4 座深淵祭壇，全數砸碎即可直接獲勝！
+    </div>
+    <button type="button" onclick="showPlayerCountSelection()" style="background:#ffa502; color:#111; padding:10px 28px; font-weight:bold; border-radius:6px; border:none; font-size:0.95rem; cursor:pointer;">
+      🚀 閱讀完畢，選擇求生者人數
+    </button>
+  </div>
+</div>
+
+<script>
+let audioCtx = null, bgmGain = null, sfxGain = null, isAudioMuted = false;
+function initAudio() {
+  try {
+    if (!audioCtx) {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new AudioContext();
+      bgmGain = audioCtx.createGain(); bgmGain.gain.value = 0.2; bgmGain.connect(audioCtx.destination);
+      sfxGain = audioCtx.createGain(); sfxGain.gain.value = 0.35; sfxGain.connect(audioCtx.destination);
+    }
+    if (audioCtx.state === "suspended") audioCtx.resume();
+  } catch(e) {}
+}
+function toggleAudio() {
+  isAudioMuted = !isAudioMuted;
+  document.getElementById("btn-audio-toggle").innerText = isAudioMuted ? "🔇 音效: 靜音" : "🔊 音效: 開啟";
+  if (audioCtx) { bgmGain.gain.value = isAudioMuted ? 0 : 0.2; sfxGain.gain.value = isAudioMuted ? 0 : 0.35; }
+}
+function playTone(freq, dur, type="sine") {
+  if (!audioCtx || isAudioMuted) return;
+  try {
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.type = type; o.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    g.gain.setValueAtTime(0.25, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+    o.connect(g); g.connect(sfxGain);
+    o.start(); o.stop(audioCtx.currentTime + dur);
+  } catch(e) {}
+}
+function playNoise(dur = 0.2, gainVal = 0.3) {
+  if (!audioCtx || isAudioMuted) return;
+  try {
+    const bufferSize = audioCtx.sampleRate * dur;
+    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const output = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) output[i] = Math.random() * 2 - 1;
+    const whiteNoise = audioCtx.createBufferSource(); whiteNoise.buffer = buffer;
+    const g = audioCtx.createGain(); g.gain.setValueAtTime(gainVal, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+    whiteNoise.connect(g); g.connect(sfxGain);
+    whiteNoise.start();
+  } catch(e) {}
+}
+
+const SFX = {
+  click: () => playTone(520, 0.05),
+  move: () => playTone(280, 0.06, "triangle"),
+  switchTurn: () => playTone(440, 0.08),
+  itemPickup: () => { playTone(440, 0.1); setTimeout(() => playTone(660, 0.15), 80); setTimeout(() => playTone(880, 0.25), 160); },
+  diceRoll: () => playTone(300 + Math.random() * 200, 0.03, "square"),
+  diceSuccess: () => playTone(784, 0.2),
+  diceFail: () => playTone(220, 0.25, "sawtooth"),
+  punchAttack: () => { playNoise(0.18, 0.45); playTone(180, 0.15, "sawtooth", 0.35); },
+  bladeSlash: () => { playTone(920, 0.12, "sawtooth", 0.35); playNoise(0.12, 0.3); },
+  bossHitPlayer: () => { playNoise(0.3, 0.55); playTone(130, 0.35, "sawtooth", 0.5); },
+  bossRoar: () => { playTone(110, 0.7, "sawtooth", 0.5); playNoise(0.65, 0.4); },
+  alarm: () => { playTone(880, 0.2, "sawtooth"); setTimeout(() => playTone(660, 0.2, "sawtooth"), 200); }
+};
+
+const CHARACTERS = [
+  { id: 1, name: "翔翔", role: "小男孩", color: "#ff4757", str: 2, spd: 5, kno: 1, san: 4, talentName: "【捉迷藏】", talent: "受重傷攻擊時，有 50% 機率直接閃避並後退！" },
+  { id: 2, name: "安安", role: "小女孩", color: "#ff9ff3", str: 1, spd: 3, kno: 2, san: 6, talentName: "【第六感應】", talent: "踏入新房間前高機率預見吉凶，並可選擇是否謹慎折返！" },
+  { id: 3, name: "浩偉", role: "男性上班族1 (帥氣)", color: "#54a0ff", str: 3, spd: 4, kno: 3, san: 3, talentName: "【臨場冷靜】", talent: "任何事件檢定失敗時，臨危不亂，自動獲得一次『重骰檢定』機會！" },
+  { id: 4, name: "大東", role: "男性上班族2 (結實)", color: "#1dd1a1", str: 5, spd: 2, kno: 2, san: 4, talentName: "【結實的身體】", talent: "肉身硬如磐石！遭受致死打擊時血量鎖定為 1 (全場限一次)！" },
+  { id: 5, name: "沛瑄", role: "女性上班族1 (知性)", color: "#9b59b6", str: 2, spd: 2, kno: 5, san: 3, talentName: "【專業領域】", talent: "在實驗室、倉庫、生產區、品管區、機房，檢定數值+2，戰鬥傷害+1！" },
+  { id: 6, name: "心妍", role: "女性上班族2 (甜美)", color: "#feca57", str: 2, spd: 4, kno: 3, san: 4, talentName: "【精神支柱】", talent: "心智檢定自身+1；若心智低於初始值，每回合結束自動恢復 1 點！" }
+];
+
+const ROOM_NAMES = [
+  "研發辦公室", "茶水間", "財務辦公區", "會議室A", "會議室B",
+  "健身房", "大會堂", "音樂房", "走廊", "機房",
+  "倉庫", "生產區", "品管區", "管理部辦公室", "實驗室",
+  "總經理辦公室", "員工休息區", "檔案室", "中央監控室"
+];
+const PROF_ROOMS = ["實驗室", "倉庫", "生產區", "品管區", "機房"];
+
+const EVENTS_POOL = [
+  { title: "1.1 燈影疾衝", desc: "電燈劇烈閃爍，在忽明忽暗中一具模糊黑影逼近至三公尺處突然朝你暴衝！隨後全暗復原...", stat: "san", target: 8, win: "心智檢定通過！你冷靜直視幻象，心智不受動搖 (心智 +1)", lose: "檢定失敗！極度恐懼令你呼吸急促 (心智 -1)" },
+  { title: "1.2 狂亂彩帶蜈蚣", desc: "頭頂掉下一堆彩色綵帶纏繞在身上，定睛一看竟然是活生生的巨大蜈蚣瘋狂攀爬！", stat: "spd", target: 8, win: "速度檢定通過！你疾速抖落踩死蜈蚣，動作靈巧 (速度 +1)", lose: "檢定失敗！被節肢毒刺咬傷，劇痛難忍 (生命值 -2)" },
+  { title: "1.3 重力翻轉墜落", desc: "房間重力突然橫移，你整個人朝前方牆面猛烈摔去！", stat: "spd", target: 9, win: "速度檢定通過！你及時攀住固定管線，重力隨之恢復 (速度 +1)", lose: "檢定失敗！重重砸在牆壁上，骨頭鈍痛 (生命值 -2)" },
+  { title: "1.4 影印機的利齒", desc: "影印機瘋狂吐出印有你驚恐面容的白紙，出紙口裂開生出尖銳利齒朝你咬來！", stat: "spd", target: 8, win: "速度檢定通過！拔掉電線癱瘓機器，並在廢紙中拾得密碼 (知識 +1)", lose: "檢定失敗！手腕被利齒撕裂咬傷 (生命值 -2)" },
+  { title: "1.5 永遠沸騰的咖啡", desc: "咖啡機流出黑血般濃稠液體，空氣中回盪著『喝下去就不累了』的誘惑囈語...", stat: "san", target: 8, win: "心智檢定通過！識破致幻誘惑，理智堅若磐石 (心智 +1)", lose: "檢定失敗！忍不住喝了一口，內臟灼痛精神萎靡 (心智 -1)" },
+  { title: "1.6 逆轉時鐘與分機", desc: "掛鐘瘋狂倒轉，響起的電話傳來你自己未來的尖叫哭喊聲...", stat: "kno", target: 8, win: "知識檢定通過！識破聲音破綻與電信干擾，理清大樓構造 (知識 +1)", lose: "檢定失敗！陷入時間悖論的精神轟炸 (心智 -1)" },
+  { title: "1.7 偽裝同事的人形白板", desc: "拍向背對著你的同事，對方的頭旋轉180度——整張臉是畫著血色笑臉的白板！", stat: "san", target: 8, win: "心智檢定通過！冷靜擦掉笑臉，人偶化作灰燼 (心智 +1)", lose: "檢定失敗！被驚悚畫面嚇到手足無措 (心智 -1)" },
+  { title: "1.8 人事合約吊線", desc: "天花板垂下密密麻麻套著染血合約的細鋼絲，如毒蛇般游向你的脖子！", stat: "spd", target: 9, win: "速度檢定通過！低頭滑鏟脫身，身手俐落 (速度 +1)", lose: "檢定失敗！被鋼絲割傷皮肉 (生命值 -2)" },
+  { title: "1.9 暴走重型叉車", desc: "無人叉車雙眼亮起紅光，狂嘯著以極速朝你封閉的死角衝撞！", stat: "str", target: 9, win: "力量檢定通過！順勢借力掀翻車身撞毀 (力氣 +1)", lose: "檢定失敗！遭鈍力衝撞吐血倒地 (生命值 -3)" },
+  { title: "1.10 機房冷卻超頻", desc: "機櫃漏電形成刺眼電弧，高壓毒氣即將全面噴發爆炸！", stat: "kno", target: 8, win: "知識檢定通過！迅速手動關閉隔離閥門 (知識 +1)", lose: "檢定失敗！被電弧擊中，四肢發麻 (生命值 -2)" },
+  { title: "1.11 鏡面第七人", desc: "洗手間鏡子映出你身後站著溺斃西裝男，鏡中鬼手竟伸出鏡面掐向喉嚨！", stat: "str", target: 8, win: "力量檢定通過！重拳擊碎鏡面打破幻界 (力氣 +1)", lose: "檢定失敗！被冰冷手掌掐暈窒息 (心智 -1)" },
+  { title: "1.12 空調黑色肉塊", desc: "通風口湧出劇烈跳動的惡臭黑肉，噴散出大量致幻毒孢子！", stat: "spd", target: 8, win: "速度檢定通過！屏住呼吸狂奔衝出毒霧 (速度 +1)", lose: "檢定失敗！吸入劇毒孢子劇烈嗆咳 (生命值 -2)" },
+  { title: "1.13 無窮套房循環", desc: "推開門竟然回到同一間房，四周空間陷入怪異的循環！", stat: "kno", target: 9, win: "知識檢定通過！找出空間交錯的奇異點跨出循環 (知識 +1)", lose: "檢定失敗！在鬼打牆中迷茫狂奔耗盡體力 (速度 -1)" },
+  { title: "1.14 流沙紅地毯", desc: "辦公室名貴的紅地毯軟化成消化胃壁般的黏液，伸出觸鬚死拖你的雙腳！", stat: "str", target: 8, win: "力量檢定通過！爆發蠻力掙斷觸鬚攀上桌台 (力氣 +1)", lose: "檢定失敗！雙腳受撕扯拉傷 (生命值 -2)" },
+  { title: "1.15 懸浮捉迷藏", desc: "空椅在空中盤旋，伴隨稚嫩笑聲『抓到你囉～』全數朝你狂砸！", stat: "spd", target: 8, win: "速度檢定通過！優雅穿梭避開所有重物 (速度 +1)", lose: "檢定失敗！被沉重實木椅砸中前胸 (生命值 -2)" }
+];
+
+const ITEMS_POOL = [
+  { id: "item_01", name: "陌生的試管", type: "key_a", isKey: true, range: 1, rangeDesc: "射程≤1", exploreDesc: "發光生化液體試管，知識+1。", combatDescMatch: "【溶解血清】對生化怪7點真實傷害！", combatDescNonMatch: "【腐蝕強酸】3點傷害並使Boss步數-1且MISS！" },
+  { id: "item_03", name: "加密隨身碟", type: "key_b", isKey: true, range: 3, rangeDesc: "射程≤3", exploreDesc: "弱電管線磁碟，速度+1。", combatDescMatch: "【邏輯炸彈】母體6點傷害並癱瘓1回合！", combatDescNonMatch: "【強電磁干擾】3點傷害並使Boss癱瘓1回合！" },
+  { id: "item_05", name: "金印公文", type: "key_c", isKey: true, range: 2, rangeDesc: "射程≤2", exploreDesc: "非人誓約公文，心智+1。", combatDescMatch: "【真相敕令】破除執行長護盾7點真實傷害！", combatDescNonMatch: "【管理威壓】3點傷害並擊退1格且MISS！" },
+  { id: "item_08", name: "黃銅鎮紙", type: "weapon", isKey: true, range: 0, rangeDesc: "同房間", exploreDesc: "實心黃銅防身，力氣+1。", combatDescMatch: "【重擊破骨】造成(力氣+4)點重創！", combatDescNonMatch: "【重擊破骨】造成(力氣+4)點重創！" },
+  { id: "item_holy_necklace", name: "神聖項鍊", type: "armor_san", isKey: true, range: 99, rangeDesc: "常駐防具", exploreDesc: "古樸項鍊，心智永久+1，常駐抵擋心智傷害-1。", combatDescMatch: "【被動常駐】抵擋心智傷害-1點！", combatDescNonMatch: "【被動常駐】抵擋心智傷害-1點！" },
+  { id: "item_bulletproof_vest", name: "防彈背心", type: "armor_str", isKey: true, range: 99, rangeDesc: "常駐防具", exploreDesc: "高強度防彈背心，力氣+1，血量上限+1，常駐抵擋物理傷害-1。", combatDescMatch: "【被動常駐】降低肉體物理傷害-1點！", combatDescNonMatch: "【被動常駐】降低肉體物理傷害-1點！" },
+  { id: "item_med", name: "急救醫療箱", type: "heal", isKey: false, range: 99, rangeDesc: "自身", exploreDesc: "標準急救包紮物資，使用恢復3點HP。", combatDescMatch: "【緊急包紮】恢復生命值3點。", combatDescNonMatch: "【緊急包紮】恢復生命值3點。" }
+];
+
+let totalPlayerCount = 1, players = [], currentPlayerIndex = 0, selectingPlayerIndex = 0;
+let mapGrid = {}, totalRoomsExplored = 0, gamePhase = "explore", activeBoss = null, currentEvent = null, modalState = null;
+let claimedGlobalItemIds = new Set();
+let visualEffects = [], drones = [], powerBoxes = [], cultists = [], cultAltars = [], electrifiedRoomKeys = [], gameLogs = [];
+let pendingDamagePlayer = null, pendingDamageAmount = 0;
+const TILE_SIZE = 82, CANVAS_CENTER = 325;
+
+class Tile {
+  constructor(x, y, name) {
+    this.x = x; this.y = y; this.name = name;
+    this.doors = { top: false, right: false, bottom: false, left: false };
+    this.explored = false; this.hasItem = null; this.hasEvent = null;
+  }
+}
+function getCurPlayer() { return players[currentPlayerIndex]; }
+
+function initApp() {
+  document.addEventListener('keydown', handleGlobalKeyInput);
+  requestAnimationFrame(gameLoop);
+  setupTouchSwipe();
+}
+window.addEventListener("DOMContentLoaded", initApp);
+
+function showPlayerCountSelection() {
+  initAudio();
+  SFX.click();
+  modalState = "player_count";
+  const content = document.getElementById("modal-content");
+  content.innerHTML = `
+    <h2 style="color:#ffa502; font-size:1.15rem; margin-bottom:8px;">選擇遊玩人數 (1 ~ 4人)</h2>
+    <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px; margin: 14px 0;">
+      <button onclick="setPlayerCount(1)" style="padding:12px 4px; background:#222938; border:1px solid #3d4a66; color:#fff; border-radius:5px;">1 人</button>
+      <button onclick="setPlayerCount(2)" style="padding:12px 4px; background:#222938; border:1px solid #3d4a66; color:#fff; border-radius:5px;">2 人</button>
+      <button onclick="setPlayerCount(3)" style="padding:12px 4px; background:#222938; border:1px solid #3d4a66; color:#fff; border-radius:5px;">3 人</button>
+      <button onclick="setPlayerCount(4)" style="padding:12px 4px; background:#222938; border:1px solid #3d4a66; color:#fff; border-radius:5px;">4 人</button>
+    </div>
+  `;
+}
+
+function setPlayerCount(cnt) {
+  SFX.click();
+  totalPlayerCount = cnt;
+  players = [];
+  selectingPlayerIndex = 0;
+  startCharSelect();
+}
+
+function startCharSelect() {
+  modalState = "char_select";
+  const curP = selectingPlayerIndex + 1;
+  const content = document.getElementById("modal-content");
+  let html = `<h2 style="color:#ffa502; font-size:1.1rem;">玩家 P${curP} 選擇求生角色</h2><div class="char-select-grid">`;
+  CHARACTERS.forEach(c => {
+    const isSelected = players.some(p => p.id === c.id);
+    html += `
+      <div class="char-card ${isSelected ? 'disabled-char' : ''}" onclick="${isSelected ? '' : `chooseChar(${c.id})`}">
+        <canvas id="sel-cvs-${c.id}" width="36" height="46" style="background:rgba(0,0,0,0.3); border-radius:4px; flex-shrink:0;"></canvas>
+        <div style="min-width:0;">
+          <div style="font-weight:bold; color:${c.color}; font-size:0.82rem;">${c.name}</div>
+          <div style="font-size:0.7rem; color:#cbd5e0;">HP:${c.str+c.spd} 速度:${c.spd}</div>
+          <div style="font-size:0.65rem; color:#9b59b6;">${c.talentName}</div>
+        </div>
+      </div>
+    `;
+  });
+  html += `</div>`;
+  content.innerHTML = html;
+
+  setTimeout(() => {
+    CHARACTERS.forEach(c => {
+      const cvs = document.getElementById(`sel-cvs-${c.id}`);
+      if (cvs) {
+        const ctx = cvs.getContext("2d");
+        ctx.clearRect(0, 0, cvs.width, cvs.height);
+        drawMiniCharacterSprite(ctx, c.id, 18, 26, 1.0);
+      }
+    });
+  }, 40);
+}
+
+function chooseChar(cid) {
+  SFX.click();
+  const c = CHARACTERS.find(ch => ch.id === cid);
+  players.push({
+    playerNum: selectingPlayerIndex + 1, id: c.id, name: c.name, role: c.role, color: c.color,
+    str: c.str, spd: c.spd, kno: c.kno, san: c.san, origSan: c.san,
+    maxHp: c.str + c.spd, hp: c.str + c.spd, talent: c.talent,
+    pos: { x: 0, y: 0 }, prevPos: { x: 0, y: 0 }, inventory: [],
+    currentSteps: c.spd, isDead: false, turnActions: { attack: false, item: false }
+  });
+  selectingPlayerIndex++;
+  if (selectingPlayerIndex < totalPlayerCount) startCharSelect();
+  else startGame();
+}
+
+function startGame() {
+  closeModal();
+  mapGrid = {}; claimedGlobalItemIds = new Set(); visualEffects = []; drones = []; powerBoxes = []; cultists = []; cultAltars = []; electrifiedRoomKeys = [];
+  const startTile = new Tile(0, 0, "一樓大廳");
+  startTile.explored = true; startTile.doors = { top:true, right:true, bottom:true, left:true };
+  mapGrid["0,0"] = startTile;
+  currentPlayerIndex = 0;
+  applyCurrentPlayer();
+  log(`🏢 異度家庭日正式啟動！直式持機，點擊右側方向鍵出發。`, "event");
+}
+
+function applyCurrentPlayer() {
+  const p = getCurPlayer();
+  if (!p) return;
+  document.documentElement.style.setProperty('--player-theme', p.color);
+  document.getElementById("current-player-title").innerText = `P${p.playerNum}: ${p.name}`;
+  document.getElementById("current-player-title").style.color = p.color;
+
+  const cvs = document.getElementById("active-char-canvas");
+  if (cvs) {
+    const ctx = cvs.getContext("2d");
+    ctx.clearRect(0, 0, cvs.width, cvs.height);
+    drawMiniCharacterSprite(ctx, p.id, 18, 25, 0.95);
+  }
+
+  updateUI();
+  drawMap();
+}
+
+function updateUI() {
+  const p = getCurPlayer();
+  if (!p) return;
+  p.maxHp = p.str + p.spd;
+  document.getElementById("p-name").innerText = p.name;
+  document.getElementById("p-hp").innerText = `${p.hp} / ${p.maxHp}`;
+  document.getElementById("p-hp-fill").style.width = `${Math.max(0, (p.hp/p.maxHp)*100)}%`;
+
+  const stepCountEl = document.getElementById("p-step-count");
+  const stepBadge = document.getElementById("p-step-badge");
+  stepCountEl.innerText = `${p.currentSteps} 步`;
+  if (p.currentSteps <= 0) {
+    stepBadge.classList.add("no-steps");
+    stepCountEl.innerText = "0 步 (請換人)";
+  } else {
+    stepBadge.classList.remove("no-steps");
+  }
+
+  document.getElementById("p-str").innerText = p.str;
+  document.getElementById("p-spd").innerText = p.spd;
+  document.getElementById("p-kno").innerText = p.kno;
+  document.getElementById("p-san").innerText = p.san;
+
+  renderInlineInventory();
+  renderPlayerTabs();
+  if (activeBoss) {
+    document.getElementById("boss-mini-bar").style.display = "flex";
+    document.getElementById("b-name").innerText = activeBoss.name;
+    document.getElementById("b-hp").innerText = activeBoss.hp;
+    document.getElementById("b-str").innerText = activeBoss.str;
+
+    if (activeBoss.route === "C") {
+      const altar = cultAltars.find(a => a.x === p.pos.x && a.y === p.pos.y && !a.destroyed);
+      const container = document.getElementById("altar-action-container");
+      if (altar) {
+        container.style.display = "block";
+      } else {
+        container.style.display = "none";
+      }
+    }
+  }
+}
+
+function renderPlayerTabs() {
+  const container = document.getElementById("playerTabList");
+  container.innerHTML = "";
+  players.forEach((pl, idx) => {
+    container.innerHTML += `
+      <div class="player-tab ${idx === currentPlayerIndex ? 'active-tab' : ''}" style="color:${pl.color};">
+        <b>P${pl.playerNum}</b>: ${pl.isDead ? '倒地' : pl.hp+'HP'} (心智:${pl.san})
+      </div>
+    `;
+  });
+}
+
+function renderInlineInventory() {
+  const p = getCurPlayer();
+  const box = document.getElementById("inlineInventoryBox");
+  if (!p || p.inventory.length === 0) {
+    box.innerHTML = `<div style="font-size:0.62rem; color:#747d8c; text-align:center; padding:4px 0;">背包目前無道具</div>`;
+    return;
+  }
+  let h = "";
+  p.inventory.forEach((it, idx) => {
+    let isArmor = (it.type === "armor_san" || it.type === "armor_str");
+    h += `
+      <div class="inline-item-card">
+        <span class="inline-item-name" onclick="showItemDetail(${idx})">${it.name}</span>
+        <button class="inline-use-btn" onclick="useItem(${idx})" style="background:${isArmor?'#718096':'#2ed573'}; color:${isArmor?'#fff':'#111'}; cursor:${isArmor?'not-allowed':'pointer'};">
+          ${isArmor?'常駐':(it.type==='heal'?'治療':'使用')}
+        </button>
+      </div>
+    `;
+  });
+  box.innerHTML = h;
+}
+
+function showItemDetail(idx) {
+  const p = getCurPlayer();
+  const it = p.inventory[idx];
+  if (!it) return;
+  modalState = "item_detail";
+  const content = document.getElementById("modal-content");
+  document.getElementById("modal").style.display = "flex";
+
+  content.innerHTML = `
+    <div style="font-size:2.4rem; margin-bottom:6px;">📦</div>
+    <h3 style="color:#ffa502; font-size:1.2rem;">【${it.name}】</h3>
+    <div style="background:rgba(255,165,2,0.1); border-left:3px solid #ffa502; padding:10px 12px; text-align:left; border-radius:4px; font-size:0.82rem; line-height:1.5; color:#cbd5e0; margin:12px 0;">
+      <b>道具描述：</b>${it.exploreDesc}<br><br>
+      <span style="color:#2ed573;">⚡ <b>戰術效果：</b>${it.combatDescMatch || it.combatDescNonMatch || "常駐防具。"}</span>
+    </div>
+    <button type="button" onclick="closeModal()" style="background:#4a5568; color:#fff; padding:7px 22px; font-weight:bold; border:none; border-radius:5px; cursor:pointer;">
+      關閉說明
+    </button>
+  `;
+}
+
+function generateTile(x, y, fromDir) {
+  const name = ROOM_NAMES[Math.floor(Math.random() * ROOM_NAMES.length)];
+  const tile = new Tile(x, y, name);
+  
+  if (fromDir === "top") tile.doors.bottom = true;
+  if (fromDir === "bottom") tile.doors.top = true;
+  if (fromDir === "left") tile.doors.right = true;
+  if (fromDir === "right") tile.doors.left = true;
+  ["top", "right", "bottom", "left"].forEach(d => { if (Math.random() < 0.65) tile.doors[d] = true; });
+
+  const rand = Math.random();
+  if (rand < 0.45) {
+    tile.hasEvent = EVENTS_POOL[Math.floor(Math.random() * EVENTS_POOL.length)];
+  } else if (rand < 0.78) {
+    const availableItems = ITEMS_POOL.filter(item => {
+      if (!item.isKey) return true;
+      return !claimedGlobalItemIds.has(item.id);
+    });
+    if (availableItems.length > 0) {
+      const selected = availableItems[Math.floor(Math.random() * availableItems.length)];
+      tile.hasItem = JSON.parse(JSON.stringify(selected));
+      if (selected.isKey) claimedGlobalItemIds.add(selected.id);
+    } else {
+      tile.hasItem = JSON.parse(JSON.stringify(ITEMS_POOL.find(i => i.id === "item_med")));
+    }
+  }
+
+  totalRoomsExplored++;
+  return tile;
+}
+
+function tryMove(dx, dy) {
+  const p = getCurPlayer();
+  if (!p || p.isDead || modalState !== null) return;
+
+  if (p.currentSteps <= 0) {
+    log(`⚠️ P${p.playerNum} 步數已用盡！請點擊【換下一位行動】結束回合。`, "event");
+    triggerScreenShake(3);
+    return;
+  }
+
+  const curTile = mapGrid[`${p.pos.x},${p.pos.y}`];
+  let dir = dx===0 ? (dy===-1?"top":"bottom") : (dx===-1?"left":"right");
+  if (!curTile.doors[dir]) {
+    log("碰！眼前是厚實水泥牆！", "event");
+    triggerScreenShake(3);
+    return;
+  }
+
+  const targetKey = `${p.pos.x+dx},${p.pos.y+dy}`;
+  let targetTile = mapGrid[targetKey];
+  let isFirstEnter = false;
+
+  if (!targetTile) {
+    targetTile = generateTile(p.pos.x+dx, p.pos.y+dy, dir);
+    mapGrid[targetKey] = targetTile;
+    isFirstEnter = true;
+  }
+
+  p.pos.x += dx; p.pos.y += dy;
+  p.currentSteps--;
+  SFX.move();
+
+  if (electrifiedRoomKeys.includes(`${p.pos.x},${p.pos.y}`)) {
+    p.currentSteps = Math.max(0, p.currentSteps - 1);
+    log(`⚡ 踩入 AI母體高壓通電房間！受到 1 點肉體傷害，額外多消耗 1 步！`, "boss");
+    applyDamageToPlayer(p, 1, "通電地板高壓電弧");
+  }
+
+  updateUI();
+  log(`【P${p.playerNum} ${p.name}】踏入【${targetTile.name}】(剩餘步數: ${p.currentSteps})`, "action");
+
+  if (isFirstEnter) {
+    targetTile.explored = true;
+    if (checkBossTrigger(targetTile)) return;
+    
+    if (targetTile.hasItem) {
+      showItemPickupModal(targetTile.hasItem);
+      targetTile.hasItem = null;
+      p.currentSteps = 0;
+      updateUI();
+      return;
+    }
+    if (targetTile.hasEvent) {
+      triggerEvent(targetTile.hasEvent);
+      targetTile.hasEvent = null;
+      p.currentSteps = 0;
+      updateUI();
+      return;
+    }
+  }
+}
+
+function applyDamageToPlayer(targetP, amount, reason = "受到傷害") {
+  if (!targetP || targetP.isDead) return;
+
+  if (targetP.id === 4 && (targetP.hp - amount) <= 0 && !targetP.ironBodyUsed) {
+    targetP.ironBodyUsed = true;
+    targetP.hp = 1;
+    log(`🛡️ 大東爆發【結實的身體】！硬扛致死打擊，血量強制鎖定為 1！`, "talent");
+    addFloatingText(targetP.pos.x, targetP.pos.y, "LOCK 1 HP!", "#ffa502", 22);
+    triggerScreenShake(8);
+    triggerDamageFlash("player");
+    updateUI();
+    return;
+  }
+
+  if (targetP.id === 1 && amount >= 3 && Math.random() < 0.5) {
+    SFX.click();
+    log(`🏃‍♂️ 翔翔觸發【捉迷藏】！靈活閃避了致命傷害！`, "talent");
+    addFloatingText(targetP.pos.x, targetP.pos.y, "DODGE!", "#2ed573", 22);
+    triggerScreenShake(3);
+    updateUI();
+    return;
+  }
+
+  if (targetP.inventory.some(i => i.id === "item_bulletproof_vest")) {
+    amount = Math.max(1, amount - 1);
+    log(`🛡️ 防彈背心為【${targetP.name}】抵擋了 1 點肉體衝擊！`, "item");
+  }
+
+  pendingDamagePlayer = targetP;
+  pendingDamageAmount = amount;
+  modalState = "damage_choice";
+
+  const content = document.getElementById("modal-content");
+  document.getElementById("modal").style.display = "flex";
+
+  content.innerHTML = `
+    <h3 style="color:#ff4757; font-size:1.15rem;">💥 遭受重創：${reason}！</h3>
+    <p style="font-size:0.82rem; color:#cbd5e0; margin:10px 0; line-height:1.5;">
+      【${targetP.name}】受到 <b>${amount} 點肉體傷害</b>！<br>
+      請選擇要扣除哪一項核心素質（力氣或速度，將同步扣除血量上限）：
+    </p>
+    <div style="display:flex; justify-content:center; gap:12px; margin-top:15px;">
+      <button type="button" onclick="resolveDamageChoice('str')" style="background:#e74c3c; color:#fff; padding:10px 18px; font-weight:bold; border:none; border-radius:5px; cursor:pointer;">
+        扣除【力氣】 (目前: ${targetP.str})
+      </button>
+      <button type="button" onclick="resolveDamageChoice('spd')" style="background:#3498db; color:#fff; padding:10px 18px; font-weight:bold; border:none; border-radius:5px; cursor:pointer;">
+        扣除【速度】 (目前: ${targetP.spd})
+      </button>
+    </div>
+  `;
+}
+
+function resolveDamageChoice(statType) {
+  SFX.hit();
+  const targetP = pendingDamagePlayer || getCurPlayer();
+  const amount = pendingDamageAmount || 1;
+
+  if (statType === 'str') {
+    targetP.str = Math.max(1, targetP.str - amount);
+    log(`💥【${targetP.name}】選擇扣除【力氣】-${amount} (剩餘力氣: ${targetP.str})`, "boss");
+  } else {
+    targetP.spd = Math.max(1, targetP.spd - amount);
+    targetP.currentSteps = Math.min(targetP.currentSteps, targetP.spd);
+    log(`💥【${targetP.name}】選擇扣除【速度】-${amount} (剩餘速度: ${targetP.spd})`, "boss");
+  }
+
+  targetP.maxHp = targetP.str + targetP.spd;
+  targetP.hp = Math.max(0, targetP.hp - amount);
+  triggerScreenShake(7);
+  triggerDamageFlash("player");
+
+  closeModal();
+
+  if (targetP.hp <= 0) {
+    checkPlayerDown(targetP);
+  }
+  updateUI();
+  drawMap();
+}
+
+function applySanDamageToPlayer(targetP, amount, reason = "精神衝擊") {
+  if (!targetP || targetP.isDead) return;
+
+  if (targetP.inventory.some(i => i.id === "item_holy_necklace")) {
+    amount = Math.max(0, amount - 1);
+    log(`✨ 神聖項鍊為【${targetP.name}】抵擋了 1 點心智傷害！`, "item");
+  }
+  if (amount <= 0) return;
+
+  targetP.san = Math.max(0, targetP.san - amount);
+  addFloatingText(targetP.pos.x, targetP.pos.y, `-${amount} 心智!`, "#8e44ad", 22);
+  triggerScreenShake(6);
+  triggerDamageFlash("player");
+  log(`🧠【${targetP.name}】受到心智衝擊 (${reason})！失去 ${amount} 點心智 (剩餘: ${targetP.san})！`, "boss");
+
+  if (targetP.san <= 0) {
+    log(`☠️【${targetP.name}】心智徹底崩潰，意識泯滅倒地！`, "boss");
+    checkPlayerDown(targetP);
+  }
+  updateUI();
+}
+
+function showItemPickupModal(item) {
+  SFX.itemPickup();
+  modalState = "item_pickup";
+  const p = getCurPlayer();
+  const copy = JSON.parse(JSON.stringify(item));
+  p.inventory.push(copy);
+
+  const content = document.getElementById("modal-content");
+  document.getElementById("modal").style.display = "flex";
+
+  content.innerHTML = `
+    <div style="font-size:2.4rem; margin-bottom:6px;">📦</div>
+    <h3 style="color:#2ed573; font-size:1.25rem;">【${p.name}】拾得：【${copy.name}】</h3>
+    <div style="background:rgba(46, 213, 115, 0.1); border-left:3px solid #2ed573; padding:10px 12px; text-align:left; border-radius:4px; font-size:0.82rem; line-height:1.5; color:#cbd5e0; margin:12px 0;">
+      <b>詳情：</b>${copy.exploreDesc}
+    </div>
+    <button type="button" onclick="closeModal()" style="background:#2ed573; color:#111; padding:8px 24px; font-weight:bold; border:none; border-radius:5px; cursor:pointer;">
+      收下物品並結束移動
+    </button>
+  `;
+  log(`🎁 尋獲【${copy.name}】，本回合強制停步。`, "item");
+}
+
+function triggerEvent(ev) {
+  modalState = "event_start";
+  currentEvent = ev;
+  const p = getCurPlayer();
+  p.hasRerolled = false;
+  const content = document.getElementById("modal-content");
+  document.getElementById("modal").style.display = "flex";
+
+  const statChinese = { str: "力氣", spd: "速度", kno: "知識", san: "心智" }[ev.stat];
+  let effectiveAttr = p[ev.stat];
+
+  content.innerHTML = `
+    <h3 style="color:#ff4757; font-size:1.2rem;">⚠️ 突發狀況：${ev.title}</h3>
+    <p style="font-size:0.85rem; color:#cbd5e0; line-height:1.5; text-align:left; background:rgba(0,0,0,0.25); padding:8px; border-radius:4px; margin:8px 0;">${ev.desc}</p>
+    <div class="dice-stage">
+      <div class="dice-box" id="diceBox">?</div>
+      <div id="diceStatus" style="font-size:0.78rem; color:#a0aec0; margin-top:4px;">等待擲骰檢定...</div>
+    </div>
+    <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:5px; font-size:0.8rem; border:1px solid #3c445c; margin-bottom:10px;">
+      進行 <b>${statChinese}檢定</b> | 目標門檻：<span style="color:#ff4757; font-weight:bold;">${ev.target} 點</span> | 你的能力：<span style="color:#ffa502; font-weight:bold;">${effectiveAttr} 點</span>
+    </div>
+    <button type="button" id="btnRollDice" onclick="startAnimatedDiceRoll()" style="background:#ffa502; color:#111; padding:8px 24px; font-weight:bold; border:none; border-radius:5px; cursor:pointer;">
+      🎲 開始擲骰！
+    </button>
+  `;
+}
+
+function startAnimatedDiceRoll() {
+  const btn = document.getElementById("btnRollDice"); if (btn) btn.disabled = true;
+  const diceBox = document.getElementById("diceBox");
+  if (diceBox) diceBox.classList.add("dice-rolling");
+  let counter = 0;
+  const itv = setInterval(() => {
+    if (diceBox) diceBox.innerText = Math.floor(Math.random() * 6) + 1;
+    counter++; SFX.diceRoll();
+    if (counter > 14) { clearInterval(itv); finalizeDiceRoll(); }
+  }, 70);
+}
+
+function finalizeDiceRoll() {
+  const p = getCurPlayer();
+  const ev = currentEvent;
+  const diceBox = document.getElementById("diceBox");
+  if (diceBox) diceBox.classList.remove("dice-rolling");
+
+  const finalRoll = Math.floor(Math.random() * 6) + 1;
+  if (diceBox) diceBox.innerText = finalRoll;
+
+  let effectiveAttr = p[ev.stat];
+  const total = finalRoll + effectiveAttr;
+  const isSuccess = total >= ev.target;
+  const statChinese = { str: "力氣", spd: "速度", kno: "知識", san: "心智" }[ev.stat];
+  const content = document.getElementById("modal-content");
+
+  if (!isSuccess && p.id === 3 && !p.hasRerolled) {
+    p.hasRerolled = true;
+    setTimeout(() => {
+      content.innerHTML = `
+        <div class="dice-stage"><div class="dice-box" style="border-color:#ffa502; color:#ffa502;">${finalRoll}</div></div>
+        <h4 style="color:#70a1ff; font-size:1rem; margin:6px 0;">💼 浩偉【臨場冷靜】發動！</h4>
+        <p style="font-size:0.78rem; color:#cbd5e0; margin-bottom:10px;">檢定未過，獲得一次重骰機會！</p>
+        <button type="button" id="btnRollDice" onclick="startAnimatedDiceRoll()" style="background:#70a1ff; color:#111; padding:8px 24px; font-weight:bold; border:none; border-radius:5px; cursor:pointer;">🎲 立即重骰！</button>
+      `;
+    }, 350);
+    return;
+  }
+
+  setTimeout(() => {
+    if (isSuccess) {
+      SFX.diceSuccess();
+      content.innerHTML = `
+        <div class="dice-stage"><div class="dice-box" style="border-color:#2ed573; color:#2ed573;">${finalRoll}</div></div>
+        <div style="background:rgba(46, 213, 115, 0.15); border:1px solid #2ed573; padding:8px; border-radius:5px; margin:8px 0; font-size:0.8rem;">
+          🎉 <b>檢定大成功！</b> 🎲 骰出 ${finalRoll} + ${statChinese}(${effectiveAttr}) = <b>${total} 點</b> (門檻 ≥ ${ev.target})
+        </div>
+        <p style="font-size:0.82rem; text-align:left;">${ev.win}</p>
+        <button type="button" onclick="closeModal()" style="background:#2ed573; color:#111; padding:7px 22px; font-weight:bold; border:none; border-radius:5px; margin-top:8px; cursor:pointer;">收起回神</button>
+      `;
+      p[ev.stat] += 1;
+    } else {
+      SFX.diceFail();
+      content.innerHTML = `
+        <div class="dice-stage"><div class="dice-box" style="border-color:#ff4757; color:#ff4757;">${finalRoll}</div></div>
+        <div style="background:rgba(255, 71, 87, 0.15); border:1px solid #ff4757; padding:8px; border-radius:5px; margin:8px 0; font-size:0.8rem;">
+          💥 <b>檢定失敗！</b> 🎲 骰出 ${finalRoll} + ${statChinese}(${effectiveAttr}) = <b>${total} 點</b> (未達門檻 ${ev.target})
+        </div>
+        <p style="font-size:0.82rem; text-align:left;">${ev.lose}</p>
+        <button type="button" onclick="closeModal()" style="background:#57606f; color:#fff; padding:7px 22px; font-weight:bold; border:none; border-radius:5px; margin-top:8px; cursor:pointer;">承受後果</button>
+      `;
+      if (ev.lose.includes("心智")) applySanDamageToPlayer(p, 1, ev.title);
+      else applyDamageToPlayer(p, 2, ev.title);
+    }
+    updateUI();
+  }, 350);
+}
+
+function checkBossTrigger(tile) {
+  if (gamePhase === "combat") return false;
+  const allTeamItems = [];
+  players.forEach(pl => allTeamItems.push(...pl.inventory));
+
+  const hasA = allTeamItems.some(i => i.id === "item_01");
+  const hasB = allTeamItems.some(i => i.id === "item_03");
+  const hasC = allTeamItems.some(i => i.id === "item_05");
+
+  let triggeredRoute = null;
+  if (hasA && (tile.name.includes("實驗室") || tile.name.includes("品管"))) triggeredRoute = "A";
+  else if (hasB && (tile.name.includes("機房") || tile.name.includes("研發"))) triggeredRoute = "B";
+  else if (hasC && (tile.name.includes("大會堂") || tile.name.includes("總經理"))) triggeredRoute = "C";
+  else if (totalRoomsExplored >= 12 && (hasA || hasB || hasC)) triggeredRoute = hasA ? "A" : (hasB ? "B" : "C");
+
+  if (triggeredRoute) {
+    tile.hasItem = null; tile.hasEvent = null;
+    showBossIntroStoryModal(triggeredRoute, tile);
+    return true;
+  }
+  return false;
+}
+
+function showBossIntroStoryModal(route, tile) {
+  modalState = "story_intro";
+  gamePhase = "combat";
+  document.getElementById("game-phase-badge").innerText = "決戰中";
+  document.getElementById("game-phase-badge").style.color = "#ff4757";
+
+  let bName = "", bHp = 20, bStr = 4, bSpd = 2, canMove = true;
+  let title = "", storyText = "";
+
+  if (route === "A") {
+    bName = "生化異變體：0號實驗體";
+    bHp = 20 + 8 * totalPlayerCount;
+    bStr = 8; bSpd = 2; canMove = true;
+    title = "🚨 路線 A 決戰：0號實驗體 (力量 8 / 速度 2)";
+    storyText = `培養槽炸裂，巨大血肉與骨刺突變的人型巨獸【0號實驗體】狂暴破出！其肌肉如鋼鐵般堅韌，力量高達 8 點！攻擊時必須以強大力量壓制其防禦！`;
+  } else if (route === "B") {
+    bName = "防禦矩陣：全知母體";
+    bHp = 18 + 5 * totalPlayerCount;
+    bStr = 4; bSpd = 0; canMove = false;
+    title = "🚨 路線 B 決戰：失控 AI 全知母體 (固定核心)";
+    storyText = `主控 AI 【全知母體】核心固定於中央機房不動！大樓進入極限超頻狀態，每回合將隨機通電 ${2 + totalPlayerCount} 間房間，並由地圖上的 3 處變電箱持續製造速度 3 格的自爆無人機圍剿！`;
+    spawnPowerBoxes(tile);
+    spawnDrones(tile);
+  } else if (route === "C") {
+    bName = "異界眷族：代理執行長";
+    bHp = 20 + 6 * totalPlayerCount;
+    bStr = 4; bSpd = 2; canMove = true;
+    title = "🚨 路線 C 決戰：深淵代理執行長 (4 座深淵祭壇)";
+    storyText = `大門後化作漆黑深淵，【代理執行長】手握燃燒黑焰鋼筆優雅降臨！四周地圖邊緣升起 4 座【🔮 深淵祭壇】！執行長會於距離超過 3 格時進行【虛空瞬移】直擊心智！只要將 4 座祭壇全數砸碎，即可將其全數吸回深淵直接獲勝！`;
+    spawnCultAltars();
+    spawnCultists();
+  }
+
+  triggerScreenShake(10);
+  triggerDamageFlash("boss");
+  SFX.alarm();
+  SFX.bossRoar();
+
+  activeBoss = {
+    name: bName, route: route, hp: bHp, maxHp: bHp, str: bStr, spd: bSpd, canMove: canMove,
+    x: tile.x, y: tile.y, paralyzed: 0, speedDebuff: 0, missAttack: 0
+  };
+
+  players.forEach(pl => { pl.pos.x = 0; pl.pos.y = 0; pl.currentSteps = pl.spd; });
+
+  document.getElementById("boss-mini-bar").style.display = "flex";
+  document.getElementById("b-name").innerText = bName;
+  document.getElementById("b-hp").innerText = bHp;
+  document.getElementById("b-str").innerText = bStr;
+
+  const content = document.getElementById("modal-content");
+  document.getElementById("modal").style.display = "flex";
+  content.innerHTML = `
+    <h2 style="color:#ff4757; font-size:1.15rem;">${title}</h2>
+    <div class="story-narrative">${storyText}</div>
+    <div style="background:rgba(255,165,2,0.15); border:1px solid #ffa502; padding:8px; border-radius:4px; font-size:0.8rem; color:#f6e58d; text-align:left; margin-bottom:10px;">
+      ⚔️ <b>決戰核心目標：</b><br>
+      ${route === 'A' ? '• 0號實驗體力量高達 8 點！近身肉搏須擲出高於 8 點的檢定才能造成傷害！' : ''}
+      ${route === 'B' ? '• AI母體不動！避開通電房間與極速(3格)無人機，分頭關閉 3 處變電箱！' : ''}
+      ${route === 'C' ? '• 分頭踩入地圖邊緣 4 座【🔮祭壇】將其全數砸碎，即可直接獲勝！' : ''}
+    </div>
+    <button type="button" onclick="closeModal()" style="background:#ff4757; color:#fff; padding:8px 24px; font-weight:bold; border:none; border-radius:5px; cursor:pointer;">
+      🔥 展開殊死決戰！
+    </button>
+  `;
+}
+
+function spawnPowerBoxes(bossTile) {
+  powerBoxes = [];
+  const coords = [{x: -2, y: -2}, {x: 2, y: 2}, {x: 2, y: -2}];
+  coords.forEach((c) => {
+    const k = `${c.x},${c.y}`;
+    if (!mapGrid[k]) {
+      const t = new Tile(c.x, c.y, "高壓變電室");
+      t.explored = true; t.doors = {top:true, right:true, bottom:true, left:true};
+      mapGrid[k] = t;
+    }
+    powerBoxes.push({ x: c.x, y: c.y, active: true });
+  });
+  log(`⚡ 地圖上散佈了 3 處【變電箱】！未關閉前，母體每回合將持續刷新速度 3 格的無人機！`, "boss");
+}
+
+function spawnDrones(bossTile) {
+  drones = [];
+  const count = totalPlayerCount;
+  for (let i = 0; i < count; i++) {
+    drones.push({ x: bossTile.x + (i % 2 === 0 ? 1 : -1), y: bossTile.y, spd: 3 });
+  }
+}
+
+function spawnCultAltars() {
+  cultAltars = [
+    { x: -3, y: -2, destroyed: false, name: "西北祭壇" },
+    { x: 3, y: -2, destroyed: false, name: "東北祭壇" },
+    { x: -3, y: 2, destroyed: false, name: "西南祭壇" },
+    { x: 3, y: 2, destroyed: false, name: "東南祭壇" }
+  ];
+  cultAltars.forEach(a => {
+    const k = `${a.x},${a.y}`;
+    if (!mapGrid[k]) {
+      const t = new Tile(a.x, a.y, `深淵祭壇偏殿`);
+      t.explored = true; t.doors = {top:true, right:true, bottom:true, left:true};
+      mapGrid[k] = t;
+    }
+  });
+  log(`🔮 地圖邊緣已升起 4 座【深淵祭壇】！全數砸碎即可直接獲勝！`, "boss");
+}
+
+function spawnCultists() {
+  cultists = [];
+  const count = Math.max(1, totalPlayerCount);
+  for (let i = 0; i < count; i++) {
+    cultists.push({ x: (i % 2 === 0 ? 2 : -2), y: (i % 2 === 0 ? -1 : 1), str: 2, spd: 2 });
+  }
+}
+
+function destroyCurrentAltar() {
+  const p = getCurPlayer();
+  const altar = cultAltars.find(a => a.x === p.pos.x && a.y === p.pos.y && !a.destroyed);
+  if (!altar) return;
+
+  altar.destroyed = true;
+  SFX.punchAttack();
+  triggerScreenShake(8);
+  addFloatingText(p.pos.x, p.pos.y, "ALTAR DESTROYED!", "#8e44ad", 22);
+
+  const destroyedCount = cultAltars.filter(a => a.destroyed).length;
+  log(`🔨 轟！【${p.name}】成功砸碎了【${altar.name}】！(進度: ${destroyedCount}/4)`, "boss");
+
+  if (destroyedCount >= 4) {
+    showEndingVictoryStory("C");
+    return;
+  }
+  updateUI();
+  drawMap();
+}
+
+function performBasicAttack() {
+  const p = getCurPlayer();
+  if (!activeBoss || p.turnActions.attack) return;
+  const dist = Math.abs(p.pos.x - activeBoss.x) + Math.abs(p.pos.y - activeBoss.y);
+  if (dist > 1) { log("距離過遠！肉搏重拳只能在相鄰 1 格內使用！", "event"); return; }
+
+  modalState = "attack_check";
+  const content = document.getElementById("modal-content");
+  document.getElementById("modal").style.display = "flex";
+
+  content.innerHTML = `
+    <h3 style="color:#ff4757; font-size:1.15rem;">⚔️ 肉搏力量檢定</h3>
+    <div class="dice-stage"><div class="dice-box" id="atkDiceBox">?</div></div>
+    <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:5px; font-size:0.8rem; margin-bottom:10px;">
+      計算公式：(D6 + 你的力氣 ${p.str}) - Boss力氣 (${activeBoss.str})<br>
+      <span style="font-size:0.75rem; color:#a0aec0;">若總力量未超過 Boss 力氣，將無法破防 (造成 0 傷害)！</span>
+    </div>
+    <button type="button" id="btnRollAtk" onclick="rollAttackDice(${p.str})" style="background:#e74c3c; color:#fff; padding:8px 24px; font-weight:bold; border:none; border-radius:5px; cursor:pointer;">🎲 擲骰出拳！</button>
+  `;
+}
+
+function rollAttackDice(str) {
+  const diceBox = document.getElementById("atkDiceBox");
+  if (diceBox) diceBox.classList.add("dice-rolling");
+  let cnt = 0;
+  const itv = setInterval(() => {
+    if (diceBox) diceBox.innerText = Math.floor(Math.random() * 6) + 1;
+    cnt++; SFX.diceRoll();
+    if (cnt > 12) { clearInterval(itv); finalizeAttackRoll(str); }
+  }, 70);
+}
+
+function finalizeAttackRoll(str) {
+  const p = getCurPlayer();
+  const diceBox = document.getElementById("atkDiceBox");
+  if (diceBox) diceBox.classList.remove("dice-rolling");
+  const roll = Math.floor(Math.random() * 6) + 1;
+  if (diceBox) diceBox.innerText = roll;
+  const total = roll + str;
+  p.turnActions.attack = true;
+  const content = document.getElementById("modal-content");
+
+  if (total > activeBoss.str) {
+    const dmg = total - activeBoss.str;
+    activeBoss.hp = Math.max(0, activeBoss.hp - dmg);
+    SFX.punchAttack(); addSlashEffect(activeBoss.x, activeBoss.y); addFloatingText(activeBoss.x, activeBoss.y, `-${dmg} HP!`, "#ff4757", 22);
+    triggerScreenShake(7); triggerDamageFlash("boss");
+    content.innerHTML = `
+      <div style="color:#2ed573; font-weight:bold; font-size:1rem; margin-bottom:8px;">💥 力量突破防禦！造成 ${dmg} 點重創！</div>
+      <button type="button" onclick="closeModal()" style="background:#2ed573; color:#111; padding:7px 22px; font-weight:bold; border:none; border-radius:5px; cursor:pointer;">確認打擊</button>
+    `;
+    if (activeBoss.hp <= 0) { showEndingVictoryStory(activeBoss.route); }
+    updateUI();
+  } else {
+    SFX.diceFail(); addFloatingText(activeBoss.x, activeBoss.y, "DEFEND / 0 DMG", "#a4b0be", 18);
+    content.innerHTML = `
+      <div style="color:#ff4757; font-weight:bold; font-size:1rem; margin-bottom:8px;">🛡️ 力量不足未破防 (造成 0 傷害)</div>
+      <button type="button" onclick="closeModal()" style="background:#57606f; color:#fff; padding:7px 22px; font-weight:bold; border:none; border-radius:5px; cursor:pointer;">返回</button>
+    `;
+    updateUI();
+  }
+}
+
+function useItem(idx) {
+  const p = getCurPlayer();
+  const it = p.inventory[idx];
+  if (it.type === "armor_san" || it.type === "armor_str") {
+    alert(`【${it.name}】為常駐防具，佩戴即可自動減免傷害，無法主動使用！`); return;
+  }
+  if (p.turnActions.item) {
+    alert("⚠️ 每回合限使用一個道具！請等待下一回合。");
+    return;
+  }
+
+  p.turnActions.item = true;
+
+  if (it.type === "heal") {
+    p.hp = Math.min(p.maxHp, p.hp + 3); p.inventory.splice(idx, 1);
+    addFloatingText(p.pos.x, p.pos.y, "+3 HP", "#2ed573", 20);
+    log(`💊 使用急救箱，HP 恢復 3 點！`, "item");
+  } else if (gamePhase === "combat" && activeBoss) {
+    activeBoss.hp = Math.max(0, activeBoss.hp - 6); p.inventory.splice(idx, 1);
+    SFX.bladeSlash(); addFloatingText(activeBoss.x, activeBoss.y, "-6 HP!", "#ff4757", 22);
+    log(`💥 戰術道具重創 Boss 6 點傷害！`, "boss");
+    if (activeBoss.hp <= 0) { showEndingVictoryStory(activeBoss.route); return; }
+  }
+  updateUI();
+}
+
+function checkPlayerDown(targetP) {
+  targetP.isDead = true;
+  log(`☠️ 玩家 P${targetP.playerNum}：【${targetP.name}】失去意識倒地！`, "boss");
+  renderPlayerTabs();
+
+  const alive = players.filter(pl => !pl.isDead);
+  if (alive.length === 0) {
+    showGameOverStory(activeBoss ? activeBoss.route : "A");
+  }
+}
+
+function showEndingVictoryStory(route) {
+  modalState = "game_win";
+  const content = document.getElementById("modal-content");
+  document.getElementById("modal").style.display = "flex";
+
+  let winText = "";
+  if (route === "A") {
+    winText = "隨著生化巨怪【0號實驗體】在純白爆破中寸寸化為灰燼，整棟大樓的生化培養槽全面停機。你們奪門而出，駕駛著車輛衝出大門，在黎明曙光中逃出生天！";
+  } else if (route === "B") {
+    winText = "3 處變電箱斷電、主控 AI【全知母體】主機熔毀，封鎖鐵捲門轟然升起。你們迎著微風走出總部大樓，回頭望去，那些恐怖的數位監控代碼隨風消散，重返自由！";
+  } else {
+    winText = "隨著 4 座深淵祭壇粉碎崩塌，強大虛空反噬將代理執行長與黑暗信徒全數吸回深淵！非人契約化為灰燼，你們手牽著手步出大門，成功死裡逃生！";
+  }
+
+  content.innerHTML = `
+    <div style="font-size:3rem; margin-bottom:6px;">🌅</div>
+    <h2 style="color:#2ed573; font-size:1.35rem;">【死裡逃生・破曉生還】</h2>
+    <div class="story-narrative">${winText}</div>
+    <button type="button" onclick="location.reload()" style="background:#2ed573; color:#111; padding:10px 30px; font-weight:bold; border:none; border-radius:5px; cursor:pointer;">
+      🎉 重新開始新的冒險
+    </button>
+  `;
+}
+
+function showGameOverStory(route) {
+  modalState = "game_lose";
+  const content = document.getElementById("modal-content");
+  document.getElementById("modal").style.display = "flex";
+
+  let loseText = "";
+  if (route === "A") {
+    loseText = "你們的肉體在冰冷的走廊上被生化肉塊同化包裹，雙眼變為慘白的複眼——全員化為了公司走廊裡獵殺下一批訪客的高級異變怪物【追蹤者】！";
+  } else if (route === "B") {
+    loseText = "肉體消亡，意識被上傳到全知母體系統，淪為永恆監控大樓、永遠工作的智能體代碼！";
+  } else {
+    loseText = "你們被當作深淵祭品，靈魂被裝入燙金考績檔案夾中，成為了沒有心智的人型肉球祭品！";
+  }
+
+  content.innerHTML = `
+    <div style="font-size:3rem; margin-bottom:6px;">💀</div>
+    <h2 style="color:#ff4757; font-size:1.35rem;">【全軍覆沒・深淵沉淪】</h2>
+    <div class="story-narrative" style="border-left-color:#ff4757;">${loseText}</div>
+    <button type="button" onclick="location.reload()" style="background:#ff4757; color:#fff; padding:10px 30px; font-weight:bold; border:none; border-radius:5px; cursor:pointer;">
+      🔄 帶著記憶，重啟輪迴
+    </button>
+  `;
+}
+
+function endTurn() {
+  if (modalState !== null) return;
+  const p = getCurPlayer();
+  if (!p) return;
+  p.turnActions.attack = false; p.turnActions.item = false;
+  log(`--- 玩家 P${p.playerNum} 結束行動 ---`, "action");
+
+  let nextIdx = (currentPlayerIndex + 1);
+  let allDone = false;
+  if (nextIdx >= players.length) { allDone = true; nextIdx = 0; }
+
+  if (allDone) {
+    if (gamePhase === "combat" && activeBoss && activeBoss.hp > 0) {
+      bossAction();
+    }
+    players.forEach(pl => { if (!pl.isDead) pl.currentSteps = pl.spd; });
+  }
+
+  let safetyCounter = 0;
+  while (players[nextIdx].isDead && safetyCounter < players.length) {
+    nextIdx = (nextIdx + 1) % players.length;
+    safetyCounter++;
+  }
+
+  currentPlayerIndex = nextIdx;
+  applyCurrentPlayer();
+}
+
+function bossAction() {
+  log(`👹 Boss 【${activeBoss.name}】與手下開始行動...`, "boss");
+  const alive = players.filter(pl => !pl.isDead);
+  if (alive.length === 0) return;
+
+  if (activeBoss.route === "B") {
+    const keys = Object.keys(mapGrid);
+    electrifiedRoomKeys = [];
+    const countToElectrify = Math.min(keys.length, 2 + totalPlayerCount);
+    const shuffled = keys.slice().sort(() => 0.5 - Math.random());
+    electrifiedRoomKeys = shuffled.slice(0, countToElectrify);
+    log(`⚡ 【高壓過載電網】母體通電了 ${countToElectrify} 間房間！`, "boss");
+
+    const activeBoxesCount = powerBoxes.filter(b => b.active).length;
+    if (activeBoxesCount > 0) {
+      const droneCount = totalPlayerCount;
+      for (let i = 0; i < droneCount; i++) { drones.push({ x: activeBoss.x, y: activeBoss.y, spd: 3 }); }
+      log(`🤖 變電箱未關閉！主控母體增殖產出 ${droneCount} 架自爆無人機 (速度 3 格)！`, "boss");
+    }
+
+    alive.forEach(pl => {
+      const pb = powerBoxes.find(b => b.x === pl.pos.x && b.y === pl.pos.y && b.active);
+      if (pb) {
+        pb.active = false;
+        log(`⚡【${pl.name}】成功關閉一處變電箱！(剩餘未關閉: ${powerBoxes.filter(b=>b.active).length}/3)`, "item");
+      }
+    });
+
+    drones.forEach((d, idx) => {
+      let nearestTarget = alive[0]; let minD = 999;
+      alive.forEach(pl => {
+        const dist = Math.abs(pl.pos.x - d.x) + Math.abs(pl.pos.y - d.y);
+        if (dist < minD) { minD = dist; nearestTarget = pl; }
+      });
+      for (let step = 0; step < 3; step++) {
+        if (d.x < nearestTarget.pos.x) d.x++; else if (d.x > nearestTarget.pos.x) d.x--;
+        else if (d.y < nearestTarget.pos.y) d.y++; else if (d.y > nearestTarget.pos.y) d.y--;
+      }
+      if (d.x === nearestTarget.pos.x && d.y === nearestTarget.pos.y) {
+        log(`🤖 自爆無人機以極速撞擊【${nearestTarget.name}】爆炸！造成 2 點肉體傷害！`, "boss");
+        drones.splice(idx, 1);
+        applyDamageToPlayer(nearestTarget, 2, "無人機自爆破片");
+      }
+    });
+
+    log(`👾 主控 AI【全知母體】固定於中央核心不動！`, "boss");
+    updateUI();
+    return;
+  }
+
+  if (activeBoss.route === "C") {
+    cultists.forEach(c => {
+      let nearestTarget = alive[0]; let minD = 999;
+      alive.forEach(pl => {
+        const dist = Math.abs(pl.pos.x - c.x) + Math.abs(pl.pos.y - c.y);
+        if (dist < minD) { minD = dist; nearestTarget = pl; }
+      });
+      for (let step = 0; step < 2; step++) {
+        if (c.x < nearestTarget.pos.x) c.x++; else if (c.x > nearestTarget.pos.x) c.x--;
+        else if (c.y < nearestTarget.pos.y) c.y++; else if (c.y > nearestTarget.pos.y) c.y--;
+      }
+      if (c.x === nearestTarget.pos.x && c.y === nearestTarget.pos.y) {
+        log(`👥【黑暗信徒】撲向【${nearestTarget.name}】發動肉體撕咬！`, "boss");
+        applyDamageToPlayer(nearestTarget, 1, "黑暗信徒利爪突襲");
+      }
+    });
+
+    let nearestTarget = alive[0]; let minD = 999;
+    alive.forEach(pl => {
+      const dist = Math.abs(pl.pos.x - activeBoss.x) + Math.abs(pl.pos.y - activeBoss.y);
+      if (dist < minD) { minD = dist; nearestTarget = pl; }
+    });
+
+    const dist = Math.abs(nearestTarget.pos.x - activeBoss.x) + Math.abs(nearestTarget.pos.y - activeBoss.y);
+    if (dist > 3) {
+      log(`🌌【虛空折躍】！距離過遠(${dist}格)，代理執行長瞬移至【${nearestTarget.name}】身邊發動心智攻擊！`, "boss");
+      activeBoss.x = nearestTarget.pos.x + (Math.random() < 0.5 ? 1 : -1);
+      activeBoss.y = nearestTarget.pos.y;
+      addFloatingText(activeBoss.x, activeBoss.y, "WARP!", "#8e44ad", 20);
+      triggerCeoMentalAttack(nearestTarget);
+      return;
+    } else {
+      for (let step = 0; step < 2; step++) {
+        let dx = nearestTarget.pos.x - activeBoss.x; let dy = nearestTarget.pos.y - activeBoss.y;
+        if (Math.abs(dx) > Math.abs(dy)) activeBoss.x += dx > 0 ? 1 : -1;
+        else if (dy !== 0) activeBoss.y += dy > 0 ? 1 : -1;
+      }
+      if (Math.abs(nearestTarget.pos.x - activeBoss.x) + Math.abs(nearestTarget.pos.y - activeBoss.y) <= 1) {
+        triggerCeoMentalAttack(nearestTarget);
+      }
+    }
+    updateUI();
+    return;
+  }
+
+  let nearestTarget = alive[0]; let minD = 999;
+  alive.forEach(pl => {
+    const d = Math.abs(pl.pos.x - activeBoss.x) + Math.abs(pl.pos.y - activeBoss.y);
+    if (d < minD) { minD = d; nearestTarget = pl; }
+  });
+
+  const dist = Math.abs(nearestTarget.pos.x - activeBoss.x) + Math.abs(nearestTarget.pos.y - activeBoss.y);
+  if (dist <= 3) {
+    activeBoss.x = nearestTarget.pos.x; activeBoss.y = nearestTarget.pos.y;
+    SFX.bossHitPlayer(); triggerScreenShake(7); triggerDamageFlash("player");
+    log(`🚨 0號實驗體狂暴衝撞【${nearestTarget.name}】！造成 3 點傷害！`, "boss");
+    applyDamageToPlayer(nearestTarget, 3, "0號實驗體狂暴衝撞");
+  } else {
+    for (let step = 0; step < 2; step++) {
+      let dx = nearestTarget.pos.x - activeBoss.x; let dy = nearestTarget.pos.y - activeBoss.y;
+      if (Math.abs(dx) > Math.abs(dy)) activeBoss.x += dx > 0 ? 1 : -1;
+      else if (dy !== 0) activeBoss.y += dy > 0 ? 1 : -1;
+    }
+  }
+  updateUI();
+}
+
+function triggerCeoMentalAttack(targetP) {
+  modalState = "ceo_mental_attack";
+  const content = document.getElementById("modal-content");
+  document.getElementById("modal").style.display = "flex";
+
+  content.innerHTML = `
+    <h3 style="color:#8e44ad; font-size:1.15rem;">🌌 代理執行長發動【虛空心智侵蝕】！</h3>
+    <p style="font-size:0.82rem; color:#cbd5e0; margin:8px 0; line-height:1.5;">
+      燃燒黑焰鋼筆劃開精神裂縫！【${targetP.name}】必須立即進行<b>心智檢定</b>抵抗瘋狂！<br>
+      門檻標準：<b>大於 8 點</b>即可完全免除心智傷害；若未達門檻，將受到 <b>(8 - 檢定值)</b> 點心智傷害！
+    </p>
+    <div class="dice-stage"><div class="dice-box" id="mentalDiceBox">?</div></div>
+    <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:5px; font-size:0.8rem; margin-bottom:10px;">
+      有效心智：<b>${targetP.san} 點</b> | 檢定公式：<b>D6 + ${targetP.san}</b>
+    </div>
+    <button type="button" id="btnRollMental" onclick="rollMentalDice(${targetP.playerNum})" style="background:#8e44ad; color:#fff; padding:8px 24px; font-weight:bold; border:none; border-radius:5px; cursor:pointer;">
+      🎲 擲骰抗懼檢定！
+    </button>
+  `;
+}
+
+function rollMentalDice(pNum) {
+  const btn = document.getElementById("btnRollMental"); if (btn) btn.disabled = true;
+  const diceBox = document.getElementById("mentalDiceBox");
+  if (diceBox) diceBox.classList.add("dice-rolling");
+  let cnt = 0;
+  const itv = setInterval(() => {
+    if (diceBox) diceBox.innerText = Math.floor(Math.random() * 6) + 1;
+    cnt++; SFX.diceRoll();
+    if (cnt > 12) { clearInterval(itv); finalizeMentalRoll(pNum); }
+  }, 70);
+}
+
+function finalizeMentalRoll(pNum) {
+  const targetP = players.find(pl => pl.playerNum === pNum);
+  const diceBox = document.getElementById("mentalDiceBox");
+  if (diceBox) diceBox.classList.remove("dice-rolling");
+  const roll = Math.floor(Math.random() * 6) + 1;
+  if (diceBox) diceBox.innerText = roll;
+  const total = roll + targetP.san;
+  const content = document.getElementById("modal-content");
+
+  if (total > 8) {
+    SFX.diceSuccess();
+    addFloatingText(targetP.pos.x, targetP.pos.y, "RESIST / 0 SAN", "#70a1ff", 20);
+    content.innerHTML = `
+      <div style="color:#2ed573; font-weight:bold; font-size:1rem; margin-bottom:8px;">
+        🎉 心智檢定大成功！(骰出 ${roll} + 心智 ${targetP.san} = ${total} > 8)
+      </div>
+      <p style="font-size:0.82rem; color:#cbd5e0;">你直視深淵意志未受動搖，完全免除心智傷害！</p>
+      <button type="button" onclick="closeModal()" style="background:#2ed573; color:#111; padding:7px 22px; font-weight:bold; border:none; border-radius:5px; cursor:pointer; margin-top:10px;">回神挺住</button>
+    `;
+    log(`🧠【${targetP.name}】心智檢定大成功 (${total} > 8)！完全免除代理執行長的心智侵蝕！`, "talent");
+  } else {
+    SFX.diceFail();
+    let sanDmg = 8 - total;
+    if (targetP.inventory.some(i => i.id === "item_holy_necklace")) {
+      sanDmg = Math.max(1, sanDmg - 1);
+      log(`✨ 神聖項鍊為【${targetP.name}】抵擋了 1 點心智傷害！`, "item");
+    }
+    targetP.san = Math.max(0, targetP.san - sanDmg);
+    addFloatingText(targetP.pos.x, targetP.pos.y, `-${sanDmg} 心智!`, "#8e44ad", 22);
+    triggerScreenShake(7);
+    triggerDamageFlash("player");
+
+    content.innerHTML = `
+      <div style="color:#ff4757; font-weight:bold; font-size:1rem; margin-bottom:8px;">
+        💥 心智檢定失敗！(骰出 ${roll} + 心智 ${targetP.san} = ${total} ≤ 8)
+      </div>
+      <p style="font-size:0.82rem; color:#cbd5e0;">受到數值差額心智傷害：<b>8 - ${total} = ${sanDmg} 點心智損失！</b> (剩餘心智: ${targetP.san})</p>
+      <button type="button" onclick="closeModal()" style="background:#57606f; color:#fff; padding:7px 22px; font-weight:bold; border:none; border-radius:5px; cursor:pointer; margin-top:10px;">承受心智折磨</button>
+    `;
+    log(`🧠【${targetP.name}】心智檢定失敗 (${total} ≤ 8)！失去 ${sanDmg} 點心智！`, "boss");
+    if (targetP.san <= 0) checkPlayerDown(targetP);
+  }
+  updateUI();
+}
+
+function openDrawer(type) {
+  const overlay = document.getElementById("drawerOverlay");
+  const title = document.getElementById("drawerTitle");
+  const body = document.getElementById("drawerBody");
+  overlay.style.display = "flex";
+  title.innerText = "📜 空間動態日誌";
+  let h = `<div style="display:flex; flex-direction:column; gap:4px; max-height:45vh; overflow-y:auto;">`;
+  gameLogs.slice().reverse().forEach(l => {
+    h += `<div style="font-size:0.72rem; padding:4px 6px; background:rgba(255,255,255,0.04); border-left:2px solid #57606f; border-radius:3px;">${l}</div>`;
+  });
+  h += `</div>`; body.innerHTML = h;
+}
+function closeDrawer() { document.getElementById("drawerOverlay").style.display = "none"; }
+
+function triggerScreenShake(mag = 6) {
+  const container = document.getElementById("canvasWrapper");
+  container.classList.remove("shake-screen"); void container.offsetWidth; container.classList.add("shake-screen");
+  setTimeout(() => container.classList.remove("shake-screen"), 350);
+}
+function triggerDamageFlash(type = "player") {
+  const wrapper = document.getElementById("canvasWrapper");
+  const flash = document.createElement("div");
+  flash.className = type === "player" ? "flash-red" : "flash-white";
+  wrapper.appendChild(flash);
+  setTimeout(() => { if (flash.parentNode) flash.parentNode.removeChild(flash); }, 400);
+}
+function addFloatingText(x, y, text, color = "#fff", size = 18) {
+  visualEffects.push({ type: "text", x, y, offsetY: 0, text, color, size, alpha: 1.0, life: 45 });
+}
+function addSlashEffect(x, y, color = "#fffa65") {
+  visualEffects.push({ type: "slash", x, y, color, life: 18, maxLife: 18 });
+}
+
+function drawMiniCharacterSprite(ctx, charId, x, y, scale = 1.0) {
+  ctx.save(); ctx.translate(x, y); ctx.scale(scale, scale);
+  if (charId === 1) { ctx.fillStyle = "#8e44ad"; ctx.fillRect(-11, -8, 5, 14); ctx.fillStyle = "#2980b9"; ctx.fillRect(-6, -6, 12, 13); ctx.fillStyle = "#f8c291"; ctx.beginPath(); ctx.arc(0, -12, 7, 0, Math.PI * 2); ctx.fill(); }
+  else if (charId === 2) { ctx.fillStyle = "#e67e22"; ctx.fillRect(-8, -15, 6, 6); ctx.fillStyle = "#f8c291"; ctx.beginPath(); ctx.arc(0, -12, 7, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = "#ff7675"; ctx.fillRect(-6, -5, 12, 15); }
+  else if (charId === 3) { ctx.fillStyle = "#1e272e"; ctx.fillRect(-7, -18, 14, 5); ctx.fillStyle = "#f8c291"; ctx.beginPath(); ctx.arc(0, -12, 7, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = "#1e3799"; ctx.fillRect(-7, -5, 14, 16); }
+  else if (charId === 4) { ctx.fillStyle = "#2d3436"; ctx.fillRect(-8, -18, 16, 5); ctx.fillStyle = "#e17055"; ctx.beginPath(); ctx.arc(0, -11, 7, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = "#b71540"; ctx.fillRect(-9, -4, 18, 16); }
+  else if (charId === 5) { ctx.fillStyle = "#2c2c54"; ctx.beginPath(); ctx.arc(0, -14, 8, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = "#f8c291"; ctx.beginPath(); ctx.arc(0, -12, 7, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = "#f5f6fa"; ctx.fillRect(-6, -5, 12, 16); }
+  else { ctx.fillStyle = "#b33939"; ctx.beginPath(); ctx.arc(0, -13, 8, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = "#f8c291"; ctx.beginPath(); ctx.arc(0, -12, 6, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = "#fab1a0"; ctx.fillRect(-6, -5, 12, 14); }
+  ctx.restore();
+}
+
+function drawBoss2DSprite(ctx, route, x, y) {
+  ctx.save(); ctx.translate(x, y);
+  if (route === "A") {
+    ctx.shadowBlur = 18; ctx.shadowColor = "#ff4757";
+    ctx.fillStyle = "#800e13"; ctx.fillRect(-8, -10, 16, 22);
+    ctx.fillStyle = "#5c060a"; ctx.beginPath(); ctx.arc(0, -16, 8, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = "#fffa65"; ctx.beginPath(); ctx.arc(-3, -17, 2, 0, Math.PI*2); ctx.arc(3, -17, 2, 0, Math.PI*2); ctx.fill();
+    ctx.strokeStyle = "#ff4757"; ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(-8, -4); ctx.quadraticCurveTo(-22, -10, -28, -2);
+    ctx.moveTo(8, -4); ctx.quadraticCurveTo(22, -10, 28, -2);
+    ctx.moveTo(-8, 8); ctx.quadraticCurveTo(-20, 18, -26, 12);
+    ctx.moveTo(8, 8); ctx.quadraticCurveTo(20, 18, 26, 12);
+    ctx.stroke();
+  } else if (route === "B") {
+    ctx.shadowBlur = 18; ctx.shadowColor = "#38ada9";
+    ctx.fillStyle = "#1e272e"; ctx.strokeStyle = "#00d2d3"; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.rect(-18, -18, 36, 36); ctx.fill(); ctx.stroke();
+    ctx.strokeStyle = "#808e9b"; ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(-18, -10); ctx.lineTo(-28, -16);
+    ctx.moveTo(18, -10); ctx.lineTo(28, -16);
+    ctx.moveTo(-18, 10); ctx.lineTo(-28, 16);
+    ctx.moveTo(18, 10); ctx.lineTo(28, 16);
+    ctx.stroke();
+    ctx.fillStyle = "#eb2f06"; ctx.beginPath(); ctx.arc(0, 0, 9, 0, Math.PI*2); ctx.fill();
+  } else {
+    ctx.shadowBlur = 18; ctx.shadowColor = "#8e44ad";
+    ctx.fillStyle = "#0c2461"; ctx.fillRect(-10, -5, 20, 24);
+    ctx.fillStyle = "#0a0c10"; ctx.strokeStyle = "#a55eea"; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(0, -15, 11, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawMap() {
+  const cvs = document.getElementById("gameCanvas");
+  if (!cvs) return;
+  const ctx = cvs.getContext("2d");
+  ctx.clearRect(0, 0, cvs.width, cvs.height);
+
+  const curP = getCurPlayer();
+  const ox = CANVAS_CENTER - (curP ? curP.pos.x : 0) * TILE_SIZE;
+  const oy = CANVAS_CENTER - (curP ? curP.pos.y : 0) * TILE_SIZE;
+
+  for (let k in mapGrid) {
+    const t = mapGrid[k];
+    const px = t.x * TILE_SIZE + ox - TILE_SIZE/2;
+    const py = t.y * TILE_SIZE + oy - TILE_SIZE/2;
+
+    ctx.fillStyle = t.explored ? "#1b2130" : "#111520";
+    if (electrifiedRoomKeys.includes(k)) ctx.fillStyle = "#5c1d24";
+    ctx.fillRect(px, py, TILE_SIZE, TILE_SIZE);
+    ctx.strokeStyle = "#47526d"; ctx.lineWidth = 2;
+    if (!t.doors.top) drawLine(ctx, px, py, px+TILE_SIZE, py);
+    if (!t.doors.right) drawLine(ctx, px+TILE_SIZE, py, px+TILE_SIZE, py+TILE_SIZE);
+    if (!t.doors.bottom) drawLine(ctx, px, py+TILE_SIZE, px+TILE_SIZE, py+TILE_SIZE);
+    if (!t.doors.left) drawLine(ctx, px, py, px, py+TILE_SIZE);
+
+    ctx.fillStyle = "#8395a7"; ctx.font = "9px sans-serif";
+    ctx.fillText(t.name.substring(0, 4), px + 4, py + 12);
+
+    const pb = powerBoxes.find(b => b.x === t.x && b.y === t.y);
+    if (pb) {
+      ctx.fillStyle = pb.active ? "#f1c40f" : "#7f8c8d";
+      ctx.fillText(pb.active ? "⚡變電箱" : "🔌已關閉", px + 12, py + 52);
+    }
+
+    const altar = cultAltars.find(a => a.x === t.x && a.y === t.y);
+    if (altar) {
+      ctx.fillStyle = altar.destroyed ? "#7f8c8d" : "#9b59b6";
+      ctx.fillText(altar.destroyed ? "❌祭壇毀" : "🔮深淵祭壇", px + 10, py + 52);
+    }
+  }
+
+  drones.forEach(d => {
+    const dx = d.x * TILE_SIZE + ox, dy = d.y * TILE_SIZE + oy;
+    ctx.fillStyle = "#3498db"; ctx.beginPath(); ctx.arc(dx, dy, 8, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = "#fff"; ctx.font = "7px sans-serif"; ctx.fillText("無人機", dx-12, dy+14);
+  });
+  cultists.forEach(c => {
+    const cx = c.x * TILE_SIZE + ox, cy = c.y * TILE_SIZE + oy;
+    ctx.fillStyle = "#8e44ad"; ctx.beginPath(); ctx.arc(cx, cy, 9, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = "#fff"; ctx.font = "7px sans-serif"; ctx.fillText("信徒", cx-10, cy+15);
+  });
+
+  if (activeBoss) {
+    const bx = activeBoss.x * TILE_SIZE + ox; const by = activeBoss.y * TILE_SIZE + oy;
+    drawBoss2DSprite(ctx, activeBoss.route, bx, by);
+    ctx.fillStyle = "#ff4757"; ctx.font = "bold 9px sans-serif"; ctx.fillText("BOSS", bx - 11, by - 24);
+  }
+
+  players.forEach((pl, idx) => {
+    const px = pl.pos.x * TILE_SIZE + ox; const py = pl.pos.y * TILE_SIZE + oy;
+    const isCur = (idx === currentPlayerIndex);
+
+    ctx.save();
+    if (isCur) {
+      ctx.shadowBlur = 10; ctx.shadowColor = pl.color;
+      ctx.fillStyle = "rgba(255, 165, 2, 0.4)";
+      ctx.beginPath(); ctx.ellipse(px, py + 10, 14, 6, 0, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.restore();
+
+    ctx.save();
+    if (pl.isDead) ctx.filter = "grayscale(1) opacity(0.5)";
+    drawMiniCharacterSprite(ctx, pl.id, px, py, 1.05);
+    ctx.restore();
+
+    ctx.fillStyle = isCur ? pl.color : "#cbd5e0";
+    ctx.font = isCur ? "bold 10px sans-serif" : "8px sans-serif";
+    ctx.textAlign = "center"; ctx.fillText(`P${pl.playerNum} ${pl.name}`, px, py - 18);
+    ctx.textAlign = "left";
+  });
+
+  for (let i = visualEffects.length - 1; i >= 0; i--) {
+    const fx = visualEffects[i];
+    const fxX = fx.x * TILE_SIZE + ox, fxY = fx.y * TILE_SIZE + oy;
+    if (fx.type === "text") {
+      ctx.save(); ctx.font = `bold ${fx.size}px sans-serif`; ctx.fillStyle = fx.color; ctx.globalAlpha = fx.alpha;
+      ctx.shadowBlur = 8; ctx.shadowColor = fx.color; ctx.fillText(fx.text, fxX - 18, fxY + fx.offsetY); ctx.restore();
+      fx.offsetY -= 0.8; fx.alpha -= 0.025; fx.life--; if (fx.life <= 0) visualEffects.splice(i, 1);
+    } else if (fx.type === "slash") {
+      const progress = 1 - (fx.life / fx.maxLife);
+      ctx.save(); ctx.strokeStyle = fx.color; ctx.lineWidth = 4 * (1 - progress); ctx.shadowBlur = 12; ctx.shadowColor = fx.color;
+      ctx.beginPath(); ctx.moveTo(fxX - 25, fxY - 25); ctx.lineTo(fxX + 25, fxY + 25); ctx.moveTo(fxX + 25, fxY - 25); ctx.lineTo(fxX - 25, fxY + 25); ctx.stroke(); ctx.restore();
+      fx.life--; if (fx.life <= 0) visualEffects.splice(i, 1);
+    }
+  }
+}
+
+function drawLine(ctx, x1, y1, x2, y2) { ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); }
+function gameLoop() { drawMap(); requestAnimationFrame(gameLoop); }
+function log(msg, type="normal") { gameLogs.push(msg); if (gameLogs.length > 50) gameLogs.shift(); }
+function closeModal() { document.getElementById("modal").style.display = "none"; modalState = null; }
+function handleGlobalKeyInput(e) {
+  if (e.key === "ArrowUp" || e.key === "w") tryMove(0, -1);
+  if (e.key === "ArrowDown" || e.key === "s") tryMove(0, 1);
+  if (e.key === "ArrowLeft" || e.key === "a") tryMove(-1, 0);
+  if (e.key === "ArrowRight" || e.key === "d") tryMove(1, 0);
+  if (e.key === " " || e.key === "Enter") endTurn();
+}
+function setupTouchSwipe() {
+  const cvs = document.getElementById('gameCanvas');
+  let sx = 0, sy = 0;
+  cvs.addEventListener('touchstart', e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, {passive:true});
+  cvs.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+    if (Math.abs(dx) > Math.abs(dy)) {
+      if (Math.abs(dx) > 30) tryMove(dx > 0 ? 1 : -1, 0);
+    } else {
+      if (Math.abs(dy) > 30) tryMove(0, dy > 0 ? 1 : -1);
+    }
+  }, {passive:true});
+}
+</script>
+</body>
+</html>
